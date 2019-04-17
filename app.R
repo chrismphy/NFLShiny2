@@ -85,7 +85,7 @@ ui_nfl8<-shinyUI(fluidPage(
              )
                ),                                         #Plot output is called on sidebarLayout... 
     tabPanel("NFL boxplot analysis",
-             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM")),
+             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM","VENUE")),
              selectInput("y2var","Select vertical axis",names(NFL_DATA)),
              column(12,plotlyOutput("custom.plot4"))),
     
