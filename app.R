@@ -135,8 +135,11 @@ server_nfl8<-shinyServer(function(input,output){
  
     ggplotly(nfl.ggplot)  #plot(nfl.ggplot)
     if(input$rf=="yes"){
-      fitrf<-lm(nfl.ss()[,input$yvar]~nfl.ss()[,input$xvar])
-      plot(fitrf,which=1)}
+      fitrf<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
+      mod<-fortify(fitrf)
+    nfl.ggplot<-ggplot(mod,aes(x=.fitted,y=.resid))+geom_point()
+    ggplotly(nfl.ggplot)
+    }
     ggplotly(nfl.ggplot)
   })
   ## SUMMARY IN TAB 1 BELOW
