@@ -80,7 +80,7 @@ ui_nfl8<-shinyUI(fluidPage(
                  fluidRow(
                    selectInput("highlight","Color",choices=c("None","Home vs Away","TEAM")),
                    #    selectInput("homeaway"," Two Home vs Away Graphs?",choices=c("no","yes")),
-                   selectInput("yvar","Select vertical axis: y",choices=names(NFL_DATA)),
+                   selectInput("yvar","Select vertical axis: y",choices=c("Margin_of_Victory,Final_Score")),
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
@@ -92,8 +92,8 @@ ui_nfl8<-shinyUI(fluidPage(
                    verbatimTextOutput("summary.plot")))))
              )
     ),                                         #Plot output is called on sidebarLayout... 
-    tabPanel("NFL PLAYOFFS vs. REGULAR SEASON",
-             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM")),
+    tabPanel("NFL boxplot analysis",
+             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM","VENUE")),
              selectInput("y2var","Select vertical axis",names(NFL_DATA)),
              column(12,plotlyOutput("custom.plot4"))),
     
