@@ -80,7 +80,7 @@ ui_nfl8<-shinyUI(fluidPage(
                  fluidRow(
                    selectInput("highlight","Color",choices=c("None","Home vs Away","TEAM")),
                    #    selectInput("homeaway"," Two Home vs Away Graphs?",choices=c("no","yes")),
-                   selectInput("yvar","Select vertical axis: y",choices=c("Margin_of_Victory,Final_Score")),
+                   selectInput("yvar","Select vertical axis: y",choices=c("Margin_of_Victory","Final_Score")),
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
