@@ -40,6 +40,7 @@ library(shinyWidgets)
 library(readxl)
 library(plyr)
 library(DT)
+library(Hmisc)
 library(plotly)
 library(MASS)
 library(dplyr,warn.conflicts=FALSE)
@@ -48,26 +49,20 @@ library(dplyr,warn.conflicts=FALSE)
 #nba_2013<-as.data.frame(nba_2013)
 #Data #1
 NFL_DATA<-read_excel("NFL_DATA.xlsx") 
-NFL_DATA<-data.frame(NFL_DATA)
+NFL_DATA<-as.data.frame(NFL_DATA)
 global.R<-NFL_DATA
 NFL_DATA$MONEYLINE<-as.integer(NFL_DATA$MONEYLINE)
 
 #Data #2
 NFL_Player<-read_excel("NFL_Player.xlsx")
-NFL_Player<-data.frame(NFL_Player)
+NFL_Player<-as.data.frame(NFL_Player)
 
 #interaction term.... https://www.theanalysisfactor.com/interpreting-interactions-in-regression/
 
 
+ 
 
 
-## keep interaction plot in same tab but put a message in the summary for linear plot and say 
-#since pvalue- is less than 0.05 the responce variable ___ affects the ___ variable.. 
-#create new tab for boxplot of nfl regular season vs playoff season... 
-
-
-
-#d_filered<-NFL_DATA %>% group_by(team)%>%filter(max(input$yvar)>20)%>%ungroup()
 ui_nfl8<-shinyUI(fluidPage(
   titlePanel("NFL Stats(2018-2019)"),
   #Application title
@@ -79,21 +74,19 @@ ui_nfl8<-shinyUI(fluidPage(
                sidebarPanel(#inputs go here
                  fluidRow(
                    selectInput("highlight","Color",choices=c("None","Home vs Away","TEAM")),
-                   #    selectInput("homeaway"," Two Home vs Away Graphs?",choices=c("no","yes")),
                    selectInput("yvar","Select vertical axis: y",choices=c("Margin_of_Victory","Final_Score")),
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
-                  # selectInput("test","Select equality of two means test",choices=c("no test","means: two-sided t-test")), #select equality of means test for home vs. away...??
-                   selectInput("summary","Summary: y/n", choices=c("no","linear","anova, y= x+z+x:z","interaction y= x+z:a")),
+                   selectInput("summary","Summary: y/n", choices=c("no","linear","anova, y= x+z+x:z","interaction y=x+z:a")),
                    selectInput("rf","residuals vs fited: y/n", choices=c("no","yes" ))
                  )),mainPanel( tabsetPanel(tabPanel("PLOT",fluidRow(
                    plotlyOutput("custom.plot"),
                    verbatimTextOutput("summary.plot")))))
              )
-    ),                                         #Plot output is called on sidebarLayout... 
+               ),                                         #Plot output is called on sidebarLayout... 
     tabPanel("NFL boxplot analysis",
-             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM","VENUE")),
+             selectInput("x2var","Select horizontal axis",c("DATASET","TEAM")),
              selectInput("y2var","Select vertical axis",names(NFL_DATA)),
              column(12,plotlyOutput("custom.plot4"))),
     
@@ -120,7 +113,7 @@ server_nfl8<-shinyServer(function(input,output){
     #   nfl.ggplot<-nfl.ggplot+ geom_point(data=nfl.tt(),colour=alpha("grey",0.7))
     if(input$highlight=="None"){
       nfl.ggplot<-ggplot(data=NFL_DATA,aes_string(input$xvar,input$yvar))+theme(axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold"))   
-      nfl.ggplot<-nfl.ggplot+geom_point(data=nfl.tt(),aes_string(input$xvar,input$yvar))+geom_count(aes(size = ..n..)) + guides(color = 'legend') 
+      nfl.ggplot<-nfl.ggplot+geom_point(data=d_filered(),aes_string(input$xvar,input$yvar))+geom_count(aes(size = ..n..)) + guides(color = 'legend') 
       nfl.ggplot<-nfl.ggplot+ggtitle(paste0(input$xvar," vs.",input$yvar))
     }
     if(input$highlight=="Home vs Away"){
@@ -132,14 +125,14 @@ server_nfl8<-shinyServer(function(input,output){
     #   if(input$homeaway=="yes"){nfl.ggplot<-nfl.ggplot+facet_wrap(~VENUE,ncol=4)}
     if(input$line=="yes"){
       nfl.ggplot<-nfl.ggplot+stat_smooth(data=NFL_DATA,aes_string(input$xvar,input$yvar),method=lm)}  
-    
     ggplotly(nfl.ggplot)  #plot(nfl.ggplot)
     if(input$rf=="yes"){
       fitrf<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
       mod<-fortify(fitrf)
     nfl.ggplot<-ggplot(mod,aes(x=.fitted,y=.resid))+geom_point()
     ggplotly(nfl.ggplot)
-    }
+      #ggplot(fitrf,which=1)
+        }
     ggplotly(nfl.ggplot)
   })
   ## SUMMARY IN TAB 1 BELOW
@@ -147,7 +140,7 @@ server_nfl8<-shinyServer(function(input,output){
     if(input$summary=="linear"){
       fit2<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
       summary(fit2)}
-    else if(input$summary=="interaction y= x+z:a"){ 
+    else if(input$summary=="interaction y=x+z:a"){ 
       fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]+NFL_DATA[,input$zvar]:NFL_DATA[,input$xvar])
       summary(fit)} })
   ###TAB 3 BELOW
