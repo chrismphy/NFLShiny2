@@ -84,7 +84,7 @@ ui_nfl8<-shinyUI(fluidPage(
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
-                   selectInput("test","Select equality of two means test",choices=c("no test","means: two-sided t-test")), #select equality of means test for home vs. away...??
+                  # selectInput("test","Select equality of two means test",choices=c("no test","means: two-sided t-test")), #select equality of means test for home vs. away...??
                    selectInput("summary","Summary: y/n", choices=c("no","linear","anova, y= x+z+x:z")),
                    selectInput("rf","residuals vs fited: y/n", choices=c("no","yes" ))
                  )),mainPanel( tabsetPanel(tabPanel("PLOT",fluidRow(
@@ -132,9 +132,7 @@ server_nfl8<-shinyServer(function(input,output){
     #   if(input$homeaway=="yes"){nfl.ggplot<-nfl.ggplot+facet_wrap(~VENUE,ncol=4)}
     if(input$line=="yes"){
       nfl.ggplot<-nfl.ggplot+stat_smooth(data=NFL_DATA,aes_string(input$xvar,input$yvar),method=lm)}  
-    if(input$test=="means: two-sided t-test"){
-      nfl.ggplot<-nfl.ggplot+ggtitle(paste0(t.test(nfl.ss()[,input$xvar],nfl.ss()[,input$yvar], alternative = "two.sided",var.equal=FALSE)$p.value))
-      ggplotly(nfl.ggplot)} #plot(nfl.ggplot)
+ 
     ggplotly(nfl.ggplot)  #plot(nfl.ggplot)
     if(input$rf=="yes"){
       fitrf<-lm(nfl.ss()[,input$yvar]~nfl.ss()[,input$xvar])
