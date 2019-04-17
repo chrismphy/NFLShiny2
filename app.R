@@ -85,7 +85,7 @@ ui_nfl8<-shinyUI(fluidPage(
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
                   # selectInput("test","Select equality of two means test",choices=c("no test","means: two-sided t-test")), #select equality of means test for home vs. away...??
-                   selectInput("summary","Summary: y/n", choices=c("no","linear","anova, y= x+z+x:z")),
+                   selectInput("summary","Summary: y/n", choices=c("no","linear","anova, y= x+z+x:z","interaction y= x+z:a")),
                    selectInput("rf","residuals vs fited: y/n", choices=c("no","yes" ))
                  )),mainPanel( tabsetPanel(tabPanel("PLOT",fluidRow(
                    plotlyOutput("custom.plot"),
@@ -132,7 +132,7 @@ server_nfl8<-shinyServer(function(input,output){
     #   if(input$homeaway=="yes"){nfl.ggplot<-nfl.ggplot+facet_wrap(~VENUE,ncol=4)}
     if(input$line=="yes"){
       nfl.ggplot<-nfl.ggplot+stat_smooth(data=NFL_DATA,aes_string(input$xvar,input$yvar),method=lm)}  
- 
+    
     ggplotly(nfl.ggplot)  #plot(nfl.ggplot)
     if(input$rf=="yes"){
       fitrf<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
@@ -147,8 +147,8 @@ server_nfl8<-shinyServer(function(input,output){
     if(input$summary=="linear"){
       fit2<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
       summary(fit2)}
-    else if(input$summary=="interaction y~a:b"){ 
-      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]*NFL_DATA[,input$zvar])
+    else if(input$summary=="interaction y= x+z:a"){ 
+      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]+NFL_DATA[,input$zvar]:NFL_DATA[,input$xvar])
       summary(fit)} })
   ###TAB 3 BELOW
   output$custom.plot2<-  renderPlot({
