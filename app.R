@@ -48,13 +48,13 @@ library(dplyr,warn.conflicts=FALSE)
 #nba_2013<-as.data.frame(nba_2013)
 #Data #1
 NFL_DATA<-read_excel("NFL_DATA.xlsx") 
-NFL_DATA<-as.data.frame(NFL_DATA)
+NFL_DATA<-data.frame(NFL_DATA)
 global.R<-NFL_DATA
 NFL_DATA$MONEYLINE<-as.integer(NFL_DATA$MONEYLINE)
 
 #Data #2
 NFL_Player<-read_excel("NFL_Player.xlsx")
-NFL_Player<-as.data.frame(NFL_Player)
+NFL_Player<-data.frame(NFL_Player)
 
 #interaction term.... https://www.theanalysisfactor.com/interpreting-interactions-in-regression/
 
