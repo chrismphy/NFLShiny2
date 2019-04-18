@@ -15,6 +15,7 @@ install <- function(packages){
 required.packages <- c("shiny",
                        "shinydashboard",
                        "shinythemes",
+                       "shinyWidgets",
                        "readxl",
                        "dplyr",
                        "tidyr",
