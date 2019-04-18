@@ -24,6 +24,7 @@ required.packages <- c("shiny",
                        "scales",
                        "plotly",
                        "DT",
+                       "MASS",
                        "broom")
 install(required.packages)
 
