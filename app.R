@@ -48,13 +48,13 @@ library(dplyr,warn.conflicts=FALSE)
 #nba_2013<-as.data.frame(nba_2013)
 #Data #1
 NFL_DATA<-read_excel("NFL_DATA.xlsx") 
-NFL_DATA<-data.frame(NFL_DATA)
+NFL_DATA<-as.data.frame(NFL_DATA)
 global.R<-NFL_DATA
 NFL_DATA$MONEYLINE<-as.integer(NFL_DATA$MONEYLINE)
 
 #Data #2
 NFL_Player<-read_excel("NFL_Player.xlsx")
-NFL_Player<-data.frame(NFL_Player)
+NFL_Player<-as.data.frame(NFL_Player)
 
 #interaction term.... https://www.theanalysisfactor.com/interpreting-interactions-in-regression/
 
@@ -89,13 +89,13 @@ ui_nfl8<-shinyUI(fluidPage(
              selectInput("y2var","Select vertical axis",names(NFL_DATA)),
              column(12,plotlyOutput("custom.plot4"))),
     
-    tabPanel("Home vs. Away dist.",                     
+    tabPanel("Margin of Victory Dist.",                     
              #sidebar2 FOR Normal distribution... 
-             fluidRow(sidebarPanel(pickerInput("team","Select which team to plot:",choices=unique(NFL_DATA$TEAM),options = list(
-               `actions-box` = TRUE, 
-               size = 10,
-               `selected-text-format` = "count > 3"
-             ), multiple=TRUE)),
+             fluidRow(sidebarPanel(
+               pickerInput("team","Select which team to plot:",choices=unique(NFL_DATA$TEAM),
+                           options = list(`actions-box` = TRUE,size = 10,`selected-text-format` = "count > 3"), multiple=TRUE),
+               selectInput("color2","Select color",c("None","VENUE"))
+               ),
              column(12, plotOutput("custom.plot2")) ) ),
     tabPanel("NFL Summaries by Game",column(12,div(dataTableOutput("dataTable1")))),
     tabPanel("NFL Summaries by Players",column(12, div(dataTableOutput("dataTable2"))))
@@ -121,9 +121,9 @@ server_nfl8<-shinyServer(function(input,output){
     }
     if(input$highlight=="TEAM"){
       nfl.ggplot<-ggplot()+geom_point(aes_string(input$xvar,input$yvar),data=NFL_DATA)+geom_point(aes_string(input$xvar,input$yvar,colour="TEAM"),data=d_filered())}
-    #   if(input$homeaway=="yes"){nfl.ggplot<-nfl.ggplot+facet_wrap(~VENUE,ncol=4)}
+       # if(input$line=="yes"){nfl.ggplot<-nfl.ggplot+stat_smooth()}
     if(input$line=="yes"){
-      nfl.ggplot<-nfl.ggplot+stat_smooth(data=NFL_DATA,aes_string(input$xvar,input$yvar),method=lm)}  
+      nfl.ggplot<-nfl.ggplot+stat_smooth(data=d_filered(),aes_string(input$xvar,input$yvar),method=lm)}  
     ggplotly(nfl.ggplot)  #plot(nfl.ggplot)
     if(input$rf=="yes"){
       fitrf<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
@@ -144,7 +144,9 @@ server_nfl8<-shinyServer(function(input,output){
       summary(fit)} })
   ###TAB 3 BELOW
   output$custom.plot2<-  renderPlot({
-    nfl.ggplot1<-ggplot(data=nfl.tt())+geom_density(aes(x=Margin_of_Victory,fill=VENUE),alpha=0.4)+labs(x="Margin of Victory")
+
+    nfl.ggplot1<-ggplot(data=nfl.tt())+geom_density(aes(x=Margin_of_Victory,color="darkblue", fill="lightblue"),alpha=0.4)+labs(x="Margin of Victory")+theme(legend.position ="none")
+    if(input$color2=="VENUE"){nfl.ggplot1<-ggplot(data=nfl.tt())+geom_density(aes(x=Margin_of_Victory,fill=VENUE),alpha=0.4)+labs(x="Margin of Victory")}
     plot(nfl.ggplot1)})
   ##TAB 2 BELOW
   output$custom.plot4<- renderPlotly({
