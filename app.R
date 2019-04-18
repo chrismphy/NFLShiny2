@@ -78,7 +78,7 @@ ui_nfl8<-shinyUI(fluidPage(
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
                    selectInput("zvar","select interaction variable: z", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
-                   selectInput("summary","Summary:", choices=c("no","linear","anova, y= x+z+x:z","interaction y=x+z:a")),
+                   selectInput("summary","Summary:", choices=c("no","linear","anova, y= x+z+x:z","interaction y=x+z+x*z")),
                    selectInput("rf","residuals vs fited: y/n", choices=c("no","yes" ))
                  )),mainPanel( tabsetPanel(tabPanel("PLOT",fluidRow(
                    plotlyOutput("custom.plot"),
@@ -140,8 +140,8 @@ server_nfl8<-shinyServer(function(input,output){
     if(input$summary=="linear"){
       fit2<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
       summary(fit2)}
-    else if(input$summary=="interaction y=x+z:a"){ 
-      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]+NFL_DATA[,input$zvar]:NFL_DATA[,input$xvar])
+    else if(input$summary=="interaction y=x+z+x*z"){ 
+      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]*NFL_DATA[,input$zvar])
       summary(fit)} })
   ###TAB 3 BELOW
   output$custom.plot2<-  renderPlot({
