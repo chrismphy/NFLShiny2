@@ -57,8 +57,6 @@ NFL_DATA$MONEYLINE<-as.integer(NFL_DATA$MONEYLINE)
 NFL_Player<-read_excel("NFL_Player.xlsx")
 NFL_Player<-as.data.frame(NFL_Player)
 
-#interaction term.... https://www.theanalysisfactor.com/interpreting-interactions-in-regression/
-
 
  
 
@@ -141,7 +139,7 @@ server_nfl8<-shinyServer(function(input,output){
       fit2<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar])
       summary(fit2)}
     else if(input$summary=="interaction y=x+z+x*z"){ 
-      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]*NFL_DATA[,input$zvar])
+      fit<-lm(NFL_DATA[,input$yvar]~NFL_DATA[,input$xvar]+NFL_DATA[,input$zvar]+ NFL_DATA[,input$xvar]:NFL_DATA[,input$zvar])
       summary(fit)} })
   ###TAB 3 BELOW
   output$custom.plot2<-  renderPlot({
