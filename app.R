@@ -75,7 +75,7 @@ ui_nfl8<-shinyUI(fluidPage(
                    selectInput("highlight","Color",choices=c("None","Home vs Away","TEAM")),
                    selectInput("yvar","Select vertical axis: y",choices=c("Margin_of_Victory","Final_Score")),
                    selectInput("xvar","Select the horizontal axis: x",names(NFL_DATA)),
-                   selectInput("zvar","select interaction variable: z(only var. x displays on graph)", choices=names(NFL_DATA)),
+                   selectInput("zvar","select interaction variable: z(only var. x will display)", choices=names(NFL_DATA)),
                    selectInput("line","Add linear regression line?",choices=c("no","yes")),
                    selectInput("summary","Summary:", choices=c("no","linear","interaction y=x+z+x*z")),
                    selectInput("rf","residuals vs fited: y/n", choices=c("no","yes" ))
